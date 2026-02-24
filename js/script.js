@@ -84,32 +84,49 @@ document.addEventListener('DOMContentLoaded', () => {
     revealOnScroll(); // Run once on load
 
     // 5. Contact Form Handling
-    const contactForm = document.getElementById('portfolio-contact');
-    if (contactForm) {
-        contactForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            // Visual feedback
-            const submitBtn = contactForm.querySelector('button');
-            const originalText = submitBtn.textContent;
-            
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Sending...';
-            
-            // Simulate API call
-            setTimeout(() => {
+    // 5. Contact Form Handling (Real Formspree Submission)
+const contactForm = document.getElementById('portfolio-contact');
+
+if (contactForm) {
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const submitBtn = contactForm.querySelector('button');
+        const originalText = submitBtn.textContent;
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending...';
+
+        try {
+            const response = await fetch(contactForm.action, {
+                method: 'POST',
+                body: new FormData(contactForm),
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (response.ok) {
                 submitBtn.textContent = 'Message Sent!';
                 submitBtn.style.background = '#28a745';
                 contactForm.reset();
-                
-                setTimeout(() => {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = originalText;
-                    submitBtn.style.background = '';
-                }, 3000);
-            }, 1500);
-        });
-    }
+            } else {
+                submitBtn.textContent = 'Error!';
+                submitBtn.style.background = '#dc3545';
+            }
+
+        } catch (error) {
+            submitBtn.textContent = 'Error!';
+            submitBtn.style.background = '#dc3545';
+        }
+
+        setTimeout(() => {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+            submitBtn.style.background = '';
+        }, 3000);
+    });
+}
 
     // 6. Dynamic Background Movement (Subtle)
     document.addEventListener('mousemove', (e) => {
